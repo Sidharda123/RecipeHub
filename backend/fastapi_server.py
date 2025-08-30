@@ -5,15 +5,25 @@ from fastapi.responses import JSONResponse
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
 
+# Load environment variables from .env file
 load_dotenv()
 
+# Configure Google Generative AI with API key
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-print("Loaded GOOGLE_API_KEY:", os.getenv("GOOGLE_API_KEY"))
-
-
+# Create FastAPI app
 app = FastAPI()
+
+# Allow CORS (Cross-Origin Resource Sharing)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins (use more restrictive in production)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
 class SpeechInput(BaseModel):
     speech_text: str
@@ -23,7 +33,6 @@ class SpeechInput(BaseModel):
 async def read_root():
     return {"message": "Welcome to Recipe Hub API! Your backend is running."}
 
-
 @app.post("/process_speech_input")
 async def process_speech_input(speech_input: SpeechInput):
     """
@@ -31,7 +40,6 @@ async def process_speech_input(speech_input: SpeechInput):
     """
     try:
         ingredients = speech_input.speech_text
-        # Language mapping for descriptive labels
         language_map = {
             "en-IN": "English",
             "te-IN": "Telugu",
@@ -41,12 +49,10 @@ async def process_speech_input(speech_input: SpeechInput):
         }
         language_name = language_map.get(speech_input.language, "English")
 
-        # Create the prompt for the generative AI
         prompt = f"""
         Create 5 recipes in {language_name} using the following ingredients provided by the user in {language_name}:
-        
         Ingredients: {ingredients}
-        
+
         Please include the following details in each recipe and details should be in {language_name}:
         1. A detailed recipe for the provided ingredients.
         2. Nutritional benefits of the ingredients used.
@@ -57,9 +63,7 @@ async def process_speech_input(speech_input: SpeechInput):
 
         Provide note point in {language_name}
         """
-
         
-        # Use Google Generative AI to generate content
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(prompt)
         generated_recipe = response.text
@@ -93,7 +97,7 @@ async def generate_diet_plan(details: dict):
         4. Suggestions for serving or enhancing the recipe, including side dishes, garnishes, or modifications to suit different preferences.
         5. Advantages and disadvantages of the recipe, such as its health benefits, possible dietary restrictions, or high-calorie content if applicable.
         6. The estimated cooking time and difficulty level (easy, medium, or hard).
-       """
+        """
         
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(prompt)
@@ -105,4 +109,4 @@ async def generate_diet_plan(details: dict):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8001)
