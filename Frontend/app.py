@@ -70,7 +70,7 @@ def main():
                 payload = {"speech_text": translated_text, "language": language[1]}
 
                 # Update URL for local server
-                api_url = "http://127.0.0.1:8001/process_speech_input"
+                api_url = "https://recipehub-2-nxio.onrender.com/process_speech_input"
 
                 response = requests.post(api_url, json=payload, timeout=30)
                 
@@ -106,7 +106,7 @@ def main():
 
         try:
             # Update URL for local server
-            api_url = "http://127.0.0.1:8001/generate_diet_plan"
+            api_url = "https://recipehub-2-nxio.onrender.com/generate_diet_plan"
             response = requests.post(api_url, json=payload, timeout=30)
             
             if response.status_code == 200:
