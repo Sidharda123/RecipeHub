@@ -44,13 +44,7 @@ def main():
 
     language = st.selectbox(
         "Select Language for Speech Recognition",
-        options=[
-            ("English","en-IN"),
-            ("Telugu", "te-IN"),
-            ("Hindi", "hi-IN"),
-            ("Tamil", "ta-IN"),
-            ("Kannada", "kn-IN"),
-        ],
+        options=[("English", "en-IN"), ("Telugu", "te-IN"), ("Hindi", "hi-IN"), ("Tamil", "ta-IN"), ("Kannada", "kn-IN")],
         format_func=lambda x: x[0]
     )
 
@@ -74,8 +68,10 @@ def main():
                 translated_text = process_speech_input(recognizer, audio_data, language, translator)
 
                 payload = {"speech_text": translated_text, "language": language[1]}
+
+                # Update URL for local server
                 api_url = "http://127.0.0.1:8001/process_speech_input"
-                
+
                 response = requests.post(api_url, json=payload, timeout=30)
                 
                 if response.status_code == 200:
@@ -94,8 +90,7 @@ def main():
     st.subheader("Enter Your Details Manually")
     region = st.selectbox(
         "Region", 
-        ["Andra Pradesh India", "Telengana India", "Karnataka India", 
-         "Tamil Naidu India", "Goa India", "Uttar Pradesh India", "International"]
+        ["Andra Pradesh India", "Telengana India", "Karnataka India", "Tamil Naidu India", "Goa India", "Uttar Pradesh India", "International"]
     )
     health_problem = st.text_input("Health Problem")
     food_type = st.selectbox("Food Type", ["Vegetarian", "Vegan", "Non-Vegetarian"])
@@ -110,6 +105,7 @@ def main():
         }
 
         try:
+            # Update URL for local server
             api_url = "http://127.0.0.1:8001/generate_diet_plan"
             response = requests.post(api_url, json=payload, timeout=30)
             
