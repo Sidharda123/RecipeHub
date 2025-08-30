@@ -19,6 +19,11 @@ class SpeechInput(BaseModel):
     speech_text: str
     language: str
 
+@app.get("/")
+async def read_root():
+    return {"message": "Welcome to Recipe Hub API! Your backend is running."}
+
+
 @app.post("/process_speech_input")
 async def process_speech_input(speech_input: SpeechInput):
     """
